@@ -1,78 +1,46 @@
 import 'package:flutter/material.dart';
 
-import '../pages/detail_layanan_page.dart';
-import '../pages/keluar_page.dart';
-import '../pages/layanan_page.dart';
-import '../pages/pengaturan_kota_page.dart';
-import '../pages/riwayat_laporan_page.dart';
-import '../pages/tentang_aplikasi_page.dart';
-import '../pages/route_tidak_dikenal_page.dart';
-import '../pages/warga_page.dart';
-
+import '../pages/halaman_detail_layanan.dart';
+import '../pages/halaman_pengaturan_kota.dart';
+import '../pages/halaman_riwayat_laporan.dart';
+import '../pages/halaman_tentang.dart';
+import '../pages/halaman_keluar.dart';
 import 'kerangka_navigasi.dart';
 
 class AppRoutes {
-  // ==============================
-  // NAMA ROUTE
-  // ==============================
-
   static const String beranda = '/';
-  static const String layanan = '/layanan';
-  static const String warga = '/warga';
   static const String detailLayanan = '/detail-layanan';
   static const String riwayatLaporan = '/riwayat-laporan';
   static const String pengaturanKota = '/pengaturan-kota';
-  static const String tentangAplikasi = '/tentang-aplikasi';
+  static const String tentang = '/tentang';
   static const String keluar = '/keluar';
-
-  // ==============================
-  // DAFTAR ROUTE
-  // ==============================
 
   static Map<String, WidgetBuilder> daftarRoute() {
     return {
       beranda: (context) => const KerangkaNavigasi(),
-      layanan: (context) => const LayananPage(),
-      warga: (context) => const WargaPage(),
-      riwayatLaporan: (context) => const RiwayatLaporanPage(),
-      pengaturanKota: (context) => const PengaturanKotaPage(),
-      tentangAplikasi: (context) => const TentangAplikasiPage(),
-      keluar: (context) => const KeluarPage(),
+      riwayatLaporan: (context) => const HalamanRiwayatLaporan(),
+      pengaturanKota: (context) => const HalamanPengaturanKota(),
+      tentang: (context) => const HalamanTentang(),
+      keluar: (context) => const HalamanKeluar(),
     };
   }
 
-  // ==============================
-  // ON GENERATE ROUTE
-  // ==============================
-
-  static Route<dynamic>? bentukRoute(
-    RouteSettings settings,
-  ) {
-    // DETAIL LAYANAN
+  static Route<dynamic>? bentukRoute(RouteSettings settings) {
     if (settings.name == detailLayanan) {
+      final data = settings.arguments as Map<String, String>;
+
       return MaterialPageRoute(
-        builder: (context) => const DetailLayananPage(),
-        settings: settings,
+        builder: (context) {
+          return HalamanDetailLayanan(
+            namaLayanan: data['namaLayanan'] ?? '',
+            dinas: data['dinas'] ?? '',
+            jamOperasional: data['jamOperasional'] ?? '',
+            keterangan: data['keterangan'] ?? '',
+          );
+        },
       );
     }
 
     return null;
   }
-
-  // ==============================
-  // UNKNOWN ROUTE
-  // ==============================
-
-  static Route<dynamic> routeTidakDikenal(
-    RouteSettings settings,
-  ) {
-    return MaterialPageRoute(
-      builder: (context) {
-        return RouteTidakDikenalPage(
-          routeName: settings.name ?? 'Tidak diketahui',
-        );
-      },
-    );
-  }
 }
-

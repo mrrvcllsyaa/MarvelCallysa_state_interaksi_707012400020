@@ -1,305 +1,225 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../pages/beranda_page.dart';
-import '../pages/layanan_page.dart';
-import '../pages/warga_page.dart';
+import '../models/pengajuan_model.dart';
+import '../pages/halaman_beranda.dart';
+import '../pages/halaman_layanan.dart';
+import '../pages/halaman_warga.dart';
+import 'app_routes.dart';
 
 class KerangkaNavigasi extends StatefulWidget {
   const KerangkaNavigasi({super.key});
 
   @override
-  State<KerangkaNavigasi> createState() =>
-      _KerangkaNavigasiState();
+  State<KerangkaNavigasi> createState() => _KerangkaNavigasiState();
 }
 
-class _KerangkaNavigasiState
-    extends State<KerangkaNavigasi> {
-  int indeksAktif = 0;
+class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
+  int _indeksTerpilih = 0;
 
-  final List<Widget> halaman = const [
-    BerandaPage(),
-    LayananPage(),
-    WargaPage(),
+  final List<Widget> _halaman = const [
+    HalamanBeranda(),
+    HalamanLayanan(),
+    HalamanWarga(),
   ];
 
-  void ubahHalaman(int index) {
+  final List<String> _judul = const [
+    'Beranda',
+    'Layanan',
+    'Warga',
+  ];
+
+  void _pilihTujuan(int indeks) {
     setState(() {
-      indeksAktif = index;
+      _indeksTerpilih = indeks;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final double lebarLayar =
-        MediaQuery.of(context).size.width;
-
-    final bool layarLebar = lebarLayar >= 600;
+    final lebarLayar = MediaQuery.of(context).size.width;
+    final layarLebar = lebarLayar >= 600;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Nusantara Cerdas',
-        ),
+        title: Text(_judul[_indeksTerpilih]),
       ),
-
-      // ====================================
-      // DRAWER
-      // ====================================
-
-      drawer: NavigationDrawer(
-        selectedIndex: indeksAktif,
-
-        onDestinationSelected: (index) {
-          // Beranda, Layanan, Warga
-          if (index <= 2) {
-            Navigator.pop(context);
-
-            setState(() {
-              indeksAktif = index;
-            });
-
-            return;
-          }
-
-          // Tutup drawer dahulu
-          Navigator.pop(context);
-
-          // Menu pendukung
-          if (index == 3) {
-            Navigator.pushNamed(
-              context,
-              '/pengaturan-kota',
-            );
-          }
-
-          if (index == 4) {
-            Navigator.pushNamed(
-              context,
-              '/tentang-aplikasi',
-            );
-          }
-
-          if (index == 5) {
-            Navigator.pushNamed(
-              context,
-              '/keluar',
-            );
-          }
-        },
-
-        children: const [
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              28,
-              16,
-              16,
-              10,
-            ),
-            child: Text(
-              'Menu Utama',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          NavigationDrawerDestination(
-            icon: Icon(
-              Icons.home_outlined,
-            ),
-            selectedIcon: Icon(
-              Icons.home,
-            ),
-            label: Text(
-              'Beranda',
-            ),
-          ),
-
-          NavigationDrawerDestination(
-            icon: Icon(
-              Icons.miscellaneous_services_outlined,
-            ),
-            selectedIcon: Icon(
-              Icons.miscellaneous_services,
-            ),
-            label: Text(
-              'Layanan',
-            ),
-          ),
-
-          NavigationDrawerDestination(
-            icon: Icon(
-              Icons.person_outline,
-            ),
-            selectedIcon: Icon(
-              Icons.person,
-            ),
-            label: Text(
-              'Warga',
-            ),
-          ),
-
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              28,
-              20,
-              16,
-              10,
-            ),
-            child: Text(
-              'Menu Pendukung',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          NavigationDrawerDestination(
-            icon: Icon(
-              Icons.settings_outlined,
-            ),
-            selectedIcon: Icon(
-              Icons.settings,
-            ),
-            label: Text(
-              'Pengaturan Kota',
-            ),
-          ),
-
-          NavigationDrawerDestination(
-            icon: Icon(
-              Icons.info_outline,
-            ),
-            selectedIcon: Icon(
-              Icons.info,
-            ),
-            label: Text(
-              'Tentang Aplikasi',
-            ),
-          ),
-
-          NavigationDrawerDestination(
-            icon: Icon(
-              Icons.logout_outlined,
-            ),
-            selectedIcon: Icon(
-              Icons.logout,
-            ),
-            label: Text(
-              'Keluar',
-            ),
-          ),
-        ],
-      ),
-
-      // ====================================
-      // BODY
-      // ====================================
-
-      body: Row(
-        children: [
-          if (layarLebar)
-            NavigationRail(
-              selectedIndex: indeksAktif,
-
-              onDestinationSelected:
-                  ubahHalaman,
-
-              labelType:
-                  NavigationRailLabelType.all,
-
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.home_outlined,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.home,
-                  ),
-                  label: Text(
-                    'Beranda',
-                  ),
-                ),
-
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.miscellaneous_services_outlined,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.miscellaneous_services,
-                  ),
-                  label: Text(
-                    'Layanan',
-                  ),
-                ),
-
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.person_outline,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.person,
-                  ),
-                  label: Text(
-                    'Warga',
-                  ),
-                ),
-              ],
-            ),
-
-          Expanded(
-            child: IndexedStack(
-              index: indeksAktif,
-              children: halaman,
-            ),
-          ),
-        ],
-      ),
-
-      // ====================================
-      // NAVIGATION BAR
-      // ====================================
-
+      drawer: _buatDrawer(),
+      body: layarLebar
+          ? _tataLetakLebar()
+          : _halaman[_indeksTerpilih],
       bottomNavigationBar: layarLebar
           ? null
-          : NavigationBar(
-              selectedIndex: indeksAktif,
+          : _buatBilahBawah(),
+    );
+  }
 
-              onDestinationSelected:
-                  ubahHalaman,
+  Widget _buatBilahBawah() {
+    final totalPengajuan = context.select<PengajuanModel, int>(
+      (model) => model.totalPengajuan,
+    );
 
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(
-                    Icons.home_outlined,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.home,
-                  ),
-                  label: 'Beranda',
-                ),
+    return NavigationBar(
+      selectedIndex: _indeksTerpilih,
+      onDestinationSelected: _pilihTujuan,
+      destinations: [
+        const NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
+          label: 'Beranda',
+        ),
+        const NavigationDestination(
+          icon: Icon(Icons.apps_outlined),
+          selectedIcon: Icon(Icons.apps),
+          label: 'Layanan',
+        ),
+        NavigationDestination(
+          icon: Badge(
+            label: Text('$totalPengajuan'),
+            isLabelVisible: totalPengajuan > 0,
+            child: const Icon(Icons.people_outline),
+          ),
+          selectedIcon: Badge(
+            label: Text('$totalPengajuan'),
+            isLabelVisible: totalPengajuan > 0,
+            child: const Icon(Icons.people),
+          ),
+          label: 'Warga',
+        ),
+      ],
+    );
+  }
 
-                NavigationDestination(
-                  icon: Icon(
-                    Icons.miscellaneous_services_outlined,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.miscellaneous_services,
-                  ),
-                  label: 'Layanan',
-                ),
+  Widget _tataLetakLebar() {
+    final totalPengajuan = context.select<PengajuanModel, int>(
+      (model) => model.totalPengajuan,
+    );
 
-                NavigationDestination(
-                  icon: Icon(
-                    Icons.person_outline,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.person,
-                  ),
-                  label: 'Warga',
-                ),
-              ],
+    return Row(
+      children: [
+        NavigationRail(
+          selectedIndex: _indeksTerpilih,
+          onDestinationSelected: _pilihTujuan,
+          extended: true,
+          destinations: [
+            const NavigationRailDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: Text('Beranda'),
             ),
+            const NavigationRailDestination(
+              icon: Icon(Icons.apps_outlined),
+              selectedIcon: Icon(Icons.apps),
+              label: Text('Layanan'),
+            ),
+            NavigationRailDestination(
+              icon: Badge(
+                label: Text('$totalPengajuan'),
+                isLabelVisible: totalPengajuan > 0,
+                child: const Icon(Icons.people_outline),
+              ),
+              selectedIcon: Badge(
+                label: Text('$totalPengajuan'),
+                isLabelVisible: totalPengajuan > 0,
+                child: const Icon(Icons.people),
+              ),
+              label: const Text('Warga'),
+            ),
+          ],
+        ),
+        const VerticalDivider(
+          width: 1,
+        ),
+        Expanded(
+          child: _halaman[_indeksTerpilih],
+        ),
+      ],
+    );
+  }
+
+  Widget _buatDrawer() {
+    return NavigationDrawer(
+      selectedIndex: _indeksTerpilih,
+      onDestinationSelected: (indeks) {
+        _pilihTujuan(indeks);
+        Navigator.pop(context);
+      },
+      children: [
+        const UserAccountsDrawerHeader(
+          accountName: Text('Nusantara Cerdas'),
+          accountEmail: Text('Layanan Warga Smart City'),
+          currentAccountPicture: CircleAvatar(
+            child: Icon(Icons.person),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(28, 16, 16, 10),
+          child: Text('Menu Utama'),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
+          label: Text('Beranda'),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.apps_outlined),
+          selectedIcon: Icon(Icons.apps),
+          label: Text('Layanan'),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.people_outline),
+          selectedIcon: Icon(Icons.people),
+          label: Text('Warga'),
+        ),
+        const Divider(
+          indent: 28,
+          endIndent: 28,
+        ),
+        ListTile(
+          leading: const Icon(Icons.map_outlined),
+          title: const Text('Riwayat Laporan'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(
+              context,
+              AppRoutes.riwayatLaporan,
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings_outlined),
+          title: const Text('Pengaturan Kota'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(
+              context,
+              AppRoutes.pengaturanKota,
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: const Text('Tentang Aplikasi'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(
+              context,
+              AppRoutes.tentang,
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.logout),
+          title: const Text('Keluar'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(
+              context,
+              AppRoutes.keluar,
+            );
+          },
+        ),
+      ],
     );
   }
 }
